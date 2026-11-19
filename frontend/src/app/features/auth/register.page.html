@@ -1,0 +1,68 @@
+<div class="card auth-card">
+  <h1>Đăng ký tài khoản</h1>
+
+  @if (done()) {
+    <div class="alert alert-success">
+      Đăng ký thành công. Tài khoản đang chờ Ban quản lý phê duyệt, bạn sẽ đăng nhập được sau khi
+      được duyệt.
+    </div>
+    <a class="btn" routerLink="/login">Về trang đăng nhập</a>
+  } @else {
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      @if (error()) {
+        <div class="alert alert-error">{{ error() }}</div>
+      }
+
+      <div class="field">
+        <label for="fullName">Họ tên / Tên đơn vị</label>
+        <input id="fullName" formControlName="fullName" />
+        @if (form.controls.fullName.touched && form.controls.fullName.invalid) {
+          <span class="error">Vui lòng nhập họ tên</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" autocomplete="username" />
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <span class="error">Email không hợp lệ</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="phone">Số điện thoại</label>
+        <input id="phone" formControlName="phone" />
+        @if (form.controls.phone.touched && form.controls.phone.invalid) {
+          <span class="error">Số điện thoại không hợp lệ</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Mật khẩu</label>
+        <input id="password" type="password" formControlName="password" autocomplete="new-password" />
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <span class="error">Tối thiểu 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt</span>
+        }
+      </div>
+
+      <div class="field">
+        <label for="confirmPassword">Nhập lại mật khẩu</label>
+        <input
+          id="confirmPassword"
+          type="password"
+          formControlName="confirmPassword"
+          autocomplete="new-password"
+        />
+        @if (form.controls.confirmPassword.touched && form.hasError('passwordMismatch')) {
+          <span class="error">Mật khẩu nhập lại không khớp</span>
+        }
+      </div>
+
+      <button class="btn" type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Đang gửi...' : 'Đăng ký' }}
+      </button>
+
+      <p class="switch muted">Đã có tài khoản? <a routerLink="/login">Đăng nhập</a></p>
+    </form>
+  }
+</div>

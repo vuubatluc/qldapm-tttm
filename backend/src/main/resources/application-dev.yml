@@ -1,0 +1,12 @@
+# Cấu hình môi trường dev (máy cá nhân). KHÔNG dùng secret này ở môi trường khác.
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev-only-secret-change-me-0123456789abcdef}
+  dev-seed:
+    enabled: true
+    # Mật khẩu chung cho các tài khoản mẫu, xem README
+    password: ${DEV_SEED_PASSWORD:Smartmall@123}
+
+logging:
+  level:
+    com.nhom9.smartmall: DEBUG

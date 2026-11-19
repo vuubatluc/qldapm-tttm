@@ -1,0 +1,244 @@
+/* Style dùng chung toàn ứng dụng. Component chỉ viết style riêng của nó. */
+:root {
+  --sm-primary: #1565c0;
+  --sm-primary-dark: #0d47a1;
+  --sm-danger: #c62828;
+  --sm-success: #2e7d32;
+  --sm-warning: #ef6c00;
+  --sm-bg: #f4f6f9;
+  --sm-surface: #fff;
+  --sm-border: #dde2ea;
+  --sm-text: #1f2933;
+  --sm-muted: #66727f;
+  --sm-sidebar-bg: #102a43;
+  --sm-radius: 8px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  color: var(--sm-text);
+  background: var(--sm-bg);
+}
+
+h1 {
+  font-size: 1.4rem;
+  margin: 0 0 16px;
+}
+
+h2 {
+  font-size: 1.1rem;
+  margin: 24px 0 12px;
+}
+
+.card {
+  background: var(--sm-surface);
+  border: 1px solid var(--sm-border);
+  border-radius: var(--sm-radius);
+  padding: 20px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+
+  h1 {
+    margin: 0;
+  }
+}
+
+/* ---------- Button ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--sm-primary);
+  background: var(--sm-primary);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+
+  &:hover:not(:disabled) {
+    background: var(--sm-primary-dark);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--sm-primary);
+
+  &:hover:not(:disabled) {
+    background: rgb(21 101 192 / 8%);
+  }
+}
+
+.btn-danger {
+  background: var(--sm-danger);
+  border-color: var(--sm-danger);
+}
+
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 0.85rem;
+}
+
+/* ---------- Form ---------- */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  label {
+    font-weight: 600;
+  }
+
+  input,
+  select,
+  textarea {
+    padding: 8px 10px;
+    border: 1px solid var(--sm-border);
+    border-radius: 6px;
+    font: inherit;
+
+    &:focus {
+      outline: 2px solid rgb(21 101 192 / 30%);
+      border-color: var(--sm-primary);
+    }
+
+    &.ng-invalid.ng-touched {
+      border-color: var(--sm-danger);
+    }
+  }
+
+  .error {
+    color: var(--sm-danger);
+    font-size: 0.85rem;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.alert {
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 14px;
+}
+
+.alert-error {
+  background: #fdecea;
+  color: var(--sm-danger);
+}
+
+.alert-success {
+  background: #e8f5e9;
+  color: var(--sm-success);
+}
+
+/* ---------- Table ---------- */
+.table-wrap {
+  overflow-x: auto;
+}
+
+table.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--sm-surface);
+
+  th,
+  td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--sm-border);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  th {
+    background: #eef2f7;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  tr.clickable:hover {
+    background: #f7f9fc;
+    cursor: pointer;
+  }
+}
+
+.toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+
+  input,
+  select {
+    padding: 7px 10px;
+    border: 1px solid var(--sm-border);
+    border-radius: 6px;
+    font: inherit;
+  }
+}
+
+.pager {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* ---------- Badge ---------- */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  background: #e3eaf3;
+  color: var(--sm-text);
+
+  &.ok {
+    background: #e8f5e9;
+    color: var(--sm-success);
+  }
+
+  &.warn {
+    background: #fff3e0;
+    color: var(--sm-warning);
+  }
+
+  &.danger {
+    background: #fdecea;
+    color: var(--sm-danger);
+  }
+}
+
+.muted {
+  color: var(--sm-muted);
+}

@@ -1,0 +1,74 @@
+<div class="page-header">
+  <h1>Khách thuê gian hàng</h1>
+  @if (auth.hasAnyRole(['ADMIN'])) {
+    <a class="btn" routerLink="/tenants/new">+ Thêm khách thuê</a>
+  }
+</div>
+
+<form class="toolbar" (ngSubmit)="load(0)">
+  <input
+    name="keyword"
+    [(ngModel)]="keyword"
+    placeholder="Tên thương hiệu, công ty, MST, mã KT..."
+    size="36"
+  />
+  <select name="status" [(ngModel)]="status" (change)="load(0)">
+    <option value="">Tất cả trạng thái</option>
+    <option value="ACTIVE">{{ statusLabels.ACTIVE }}</option>
+    <option value="INACTIVE">{{ statusLabels.INACTIVE }}</option>
+  </select>
+  <button class="btn" type="submit">Tìm</button>
+</form>
+
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+}
+
+<div class="table-wrap card" style="padding: 0">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Mã KT</th>
+        <th>Thương hiệu</th>
+        <th>Tên pháp lý</th>
+        <th>MST / CCCD</th>
+        <th>Ngành hàng</th>
+        <th>Gian đang thuê</th>
+        <th>Hết hạn HĐ</th>
+        <th>Trạng thái</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (t of page()?.content; track t.id) {
+        <tr class="clickable" (click)="open(t)">
+          <td>{{ t.tenantCode }}</td>
+          <td><strong>{{ t.brandName }}</strong></td>
+          <td>{{ t.legalName }}</td>
+          <td>{{ t.idNumber }}</td>
+          <td>{{ t.category ?? '—' }}</td>
+          <td>{{ t.activeUnitCodes.length ? t.activeUnitCodes.join(', ') : '—' }}</td>
+          <td>{{ t.nearestLeaseEnd ? (t.nearestLeaseEnd | date: 'dd/MM/yyyy') : '—' }}</td>
+          <td>
+            <span class="badge" [class.ok]="t.status === 'ACTIVE'">{{ statusLabels[t.status] }}</span>
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="8" class="muted">{{ loading() ? 'Đang tải...' : 'Chưa có khách thuê nào.' }}</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (page(); as p) {
+  @if (p.totalPages > 1) {
+    <div class="pager">
+      <button class="btn btn-ghost btn-sm" [disabled]="p.page === 0" (click)="load(p.page - 1)">‹ Trước</button>
+      <span>Trang {{ p.page + 1 }} / {{ p.totalPages }}</span>
+      <button class="btn btn-ghost btn-sm" [disabled]="p.page + 1 >= p.totalPages" (click)="load(p.page + 1)">
+        Sau ›
+      </button>
+    </div>
+  }
+}

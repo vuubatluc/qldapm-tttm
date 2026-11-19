@@ -1,0 +1,91 @@
+<form class="card" style="margin-bottom: 16px" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <h2 style="margin-top: 0">Gán gian hàng</h2>
+
+  <div class="form-grid">
+    <div class="field">
+      <label for="floorId">Tầng</label>
+      <select id="floorId" formControlName="floorId">
+        <option value="">Tất cả tầng</option>
+        @for (f of floors(); track f.id) {
+          <option [value]="f.id">{{ f.name }}</option>
+        }
+      </select>
+    </div>
+    <div class="field">
+      <label for="unitId">Gian hàng trống *</label>
+      <select id="unitId" formControlName="unitId">
+        <option value="">— Chọn gian —</option>
+        @for (u of units(); track u.id) {
+          <option [value]="u.id">
+            {{ u.unitCode }} · {{ u.zoneName }} · {{ u.areaM2 }} m² {{ u.plannedCategory ? '· ' + u.plannedCategory : '' }}
+          </option>
+        }
+      </select>
+      @if (form.controls.unitId.touched && form.controls.unitId.invalid) {
+        <span class="error">Chọn một gian hàng</span>
+      }
+      @if (units().length === 0) {
+        <span class="muted">Không còn gian trống ở tầng này.</span>
+      }
+    </div>
+    <div class="field">
+      <label for="contractNo">Số hợp đồng</label>
+      <input id="contractNo" formControlName="contractNo" placeholder="Để trống: tự sinh HD-YYYY-[Gian]-[KT]" />
+    </div>
+  </div>
+
+  @if (selectedUnit(); as u) {
+    <p class="muted">
+      Gian {{ u.unitCode }} · Tầng {{ u.floorCode }} · {{ u.zoneName }} · Đơn giá niêm yết
+      {{ (u.refRent ?? 0) | number }} đ/m²/tháng
+    </p>
+  }
+
+  <h2>Điều khoản</h2>
+  <div class="form-grid">
+    <div class="field">
+      <label for="leaseFrom">Ngày bắt đầu *</label>
+      <input id="leaseFrom" type="date" formControlName="leaseFrom" />
+    </div>
+    <div class="field">
+      <label for="leaseToInclusive">Ngày kết thúc (ngày thuê cuối) *</label>
+      <input id="leaseToInclusive" type="date" formControlName="leaseToInclusive" />
+      @if (form.controls.leaseToInclusive.hasError('beforeStart')) {
+        <span class="error">Ngày kết thúc phải sau ngày bắt đầu</span>
+      }
+    </div>
+    <div class="field">
+      <label for="chargeAreaM2">Diện tích tính phí (m²) *</label>
+      <input id="chargeAreaM2" type="number" step="0.01" formControlName="chargeAreaM2" />
+    </div>
+    <div class="field">
+      <label for="rentRate">Đơn giá thuê (đ/m²/tháng) *</label>
+      <input id="rentRate" type="number" formControlName="rentRate" />
+    </div>
+    <div class="field">
+      <label for="serviceRate">Phí dịch vụ (đ/m²/tháng) *</label>
+      <input id="serviceRate" type="number" formControlName="serviceRate" />
+    </div>
+    <div class="field">
+      <label for="paymentCycleMonths">Chu kỳ thanh toán (tháng) *</label>
+      <input id="paymentCycleMonths" type="number" min="1" max="12" formControlName="paymentCycleMonths" />
+    </div>
+    <div class="field">
+      <label for="depositAmount">Tiền đặt cọc (đ) *</label>
+      <input id="depositAmount" type="number" formControlName="depositAmount" />
+      <span class="muted">Gợi ý: 3 tháng tiền thuê cơ sở</span>
+    </div>
+  </div>
+
+  <label style="display: block; margin-top: 16px">
+    <input type="checkbox" formControlName="activateNow" />
+    Kích hoạt ngay (gian chuyển sang "Đã thuê")
+  </label>
+
+  <div class="form-actions">
+    <button class="btn" type="submit" [disabled]="busy()">
+      {{ form.controls.activateNow.value ? 'Tạo & kích hoạt hợp đồng' : 'Lưu hợp đồng nháp' }}
+    </button>
+    <button class="btn btn-ghost" type="button" (click)="cancelled.emit()">Hủy</button>
+  </div>
+</form>

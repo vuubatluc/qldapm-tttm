@@ -1,0 +1,105 @@
+<div class="page-header">
+  <h1>{{ id() ? 'Cập nhật hồ sơ khách thuê' : 'Thêm khách thuê' }}</h1>
+  <a class="btn btn-ghost" routerLink="/tenants">‹ Danh sách</a>
+</div>
+
+@if (createdAccount(); as created) {
+  <div class="card">
+    <div class="alert alert-success">Đã tạo hồ sơ khách thuê và cấp tài khoản cổng thông tin.</div>
+    <p>Tên đăng nhập: <strong>{{ created.account.email }}</strong></p>
+    <p>
+      Mật khẩu tạm: <strong>{{ created.account.temporaryPassword }}</strong>
+      <span class="muted">— chỉ hiển thị một lần, hãy gửi cho khách thuê.</span>
+    </p>
+    <a class="btn" [routerLink]="['/tenants', created.tenantId]">Xem hồ sơ & gán gian hàng</a>
+  </div>
+} @else {
+  <form class="card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    @if (error()) {
+      <div class="alert alert-error">{{ error() }}</div>
+    }
+
+    <h2 style="margin-top: 0">Thông tin pháp lý</h2>
+    <div class="form-grid">
+      <div class="field">
+        <label for="legalName">Tên doanh nghiệp / cá nhân *</label>
+        <input id="legalName" formControlName="legalName" />
+        @if (form.controls.legalName.touched && form.controls.legalName.invalid) {
+          <span class="error">Bắt buộc</span>
+        }
+      </div>
+      <div class="field">
+        <label for="brandName">Tên thương hiệu *</label>
+        <input id="brandName" formControlName="brandName" />
+        @if (form.controls.brandName.touched && form.controls.brandName.invalid) {
+          <span class="error">Bắt buộc</span>
+        }
+      </div>
+      <div class="field">
+        <label for="idType">Loại định danh *</label>
+        <select id="idType" formControlName="idType">
+          <option value="TAX_CODE">{{ idTypeLabels.TAX_CODE }}</option>
+          <option value="CITIZEN_ID">{{ idTypeLabels.CITIZEN_ID }}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="idNumber">{{ idTypeLabels[form.controls.idType.value] }} *</label>
+        <input id="idNumber" formControlName="idNumber" />
+        @if (form.controls.idNumber.touched && form.controls.idNumber.invalid) {
+          <span class="error">
+            {{ form.controls.idType.value === 'TAX_CODE' ? 'MST gồm 10 hoặc 13 số' : 'CCCD gồm 12 số' }}
+          </span>
+        }
+      </div>
+      <div class="field">
+        <label for="representative">Người đại diện pháp luật</label>
+        <input id="representative" formControlName="representative" />
+      </div>
+      <div class="field">
+        <label for="category">Ngành hàng</label>
+        <select id="category" formControlName="category">
+          <option value="">— Chọn —</option>
+          @for (c of categories; track c) {
+            <option [value]="c">{{ c }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <h2>Liên hệ</h2>
+    <div class="form-grid">
+      <div class="field">
+        <label for="contactEmail">Email nhận thông báo & hóa đơn *</label>
+        <input id="contactEmail" type="email" formControlName="contactEmail" />
+        @if (form.controls.contactEmail.touched && form.controls.contactEmail.invalid) {
+          <span class="error">Email không hợp lệ</span>
+        }
+      </div>
+      <div class="field">
+        <label for="phone">Số điện thoại *</label>
+        <input id="phone" formControlName="phone" />
+        @if (form.controls.phone.touched && form.controls.phone.invalid) {
+          <span class="error">Số điện thoại không hợp lệ</span>
+        }
+      </div>
+      <div class="field" style="grid-column: 1 / -1">
+        <label for="address">Địa chỉ</label>
+        <input id="address" formControlName="address" />
+      </div>
+    </div>
+
+    @if (!id()) {
+      <label style="display: block; margin-top: 16px">
+        <input type="checkbox" formControlName="createPortalAccount" />
+        Cấp tài khoản Cổng thông tin khách thuê (đăng nhập bằng email liên hệ)
+      </label>
+    }
+
+    <div class="form-actions">
+      <button class="btn" type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Đang lưu...' : 'Lưu' }}
+      </button>
+      <a class="btn btn-ghost" routerLink="/tenants">Hủy</a>
+    </div>
+  </form>
+}

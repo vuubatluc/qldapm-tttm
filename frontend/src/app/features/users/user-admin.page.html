@@ -1,0 +1,112 @@
+<div class="page-header">
+  <h1>Tài khoản & phân quyền</h1>
+</div>
+
+<form class="toolbar" (ngSubmit)="load(0)">
+  <input name="keyword" [(ngModel)]="keyword" placeholder="Email hoặc họ tên" />
+  <select name="role" [(ngModel)]="role" (change)="load(0)">
+    <option value="">Tất cả vai trò</option>
+    @for (r of roles; track r) {
+      <option [value]="r">{{ roleLabels[r] }}</option>
+    }
+  </select>
+  <select name="status" [(ngModel)]="status" (change)="load(0)">
+    <option value="">Tất cả trạng thái</option>
+    <option value="PENDING">{{ statusLabels.PENDING }}</option>
+    <option value="ACTIVE">{{ statusLabels.ACTIVE }}</option>
+    <option value="SUSPENDED">{{ statusLabels.SUSPENDED }}</option>
+  </select>
+  <button class="btn" type="submit">Tìm</button>
+</form>
+
+@if (error()) {
+  <div class="alert alert-error">{{ error() }}</div>
+}
+@if (message()) {
+  <div class="alert alert-success">{{ message() }}</div>
+}
+
+<div class="table-wrap card" style="padding: 0">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Họ tên</th>
+        <th>Vai trò</th>
+        <th>Trạng thái</th>
+        <th>Hồ sơ khách thuê</th>
+        <th>Đăng nhập gần nhất</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (u of page()?.content; track u.id) {
+        @let isSelf = u.id === auth.currentUser()?.id;
+        <tr>
+          <td>{{ u.email }}</td>
+          <td>{{ u.fullName }}</td>
+          <td>
+            <select
+              [ngModel]="u.role"
+              (ngModelChange)="changeRole(u, $event)"
+              [disabled]="isSelf || !!u.tenantId"
+              [title]="u.tenantId ? 'Tài khoản gắn với hồ sơ khách thuê' : ''"
+            >
+              @for (r of roles; track r) {
+                <option [value]="r">{{ roleLabels[r] }}</option>
+              }
+            </select>
+          </td>
+          <td>
+            <span
+              class="badge"
+              [class.ok]="u.status === 'ACTIVE'"
+              [class.warn]="u.status === 'PENDING'"
+              [class.danger]="u.status === 'SUSPENDED'"
+            >
+              {{ statusLabels[u.status] }}
+            </span>
+          </td>
+          <td>
+            @if (u.role === 'TENANT') {
+              @if (u.tenantId) {
+                <a [routerLink]="['/tenants', u.tenantId]">Đã liên kết</a>
+              } @else {
+                <span class="badge warn" title="Liên kết tại trang chi tiết khách thuê">Chưa liên kết</span>
+              }
+            } @else {
+              <span class="muted">—</span>
+            }
+          </td>
+          <td>{{ u.lastLoginAt ? (u.lastLoginAt | date: 'dd/MM/yyyy HH:mm') : '—' }}</td>
+          <td style="white-space: nowrap">
+            @if (!isSelf) {
+              @if (u.status !== 'ACTIVE') {
+                <button class="btn btn-sm" (click)="changeStatus(u, 'ACTIVE')">
+                  {{ u.status === 'PENDING' ? 'Duyệt' : 'Mở lại' }}
+                </button>
+              }
+              @if (u.status === 'ACTIVE') {
+                <button class="btn btn-danger btn-sm" (click)="changeStatus(u, 'SUSPENDED')">Tạm dừng</button>
+              }
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="7" class="muted">Không có tài khoản.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if (page(); as p) {
+  @if (p.totalPages > 1) {
+    <div class="pager">
+      <button class="btn btn-ghost btn-sm" [disabled]="p.page === 0" (click)="load(p.page - 1)">‹ Trước</button>
+      <span>Trang {{ p.page + 1 }} / {{ p.totalPages }}</span>
+      <button class="btn btn-ghost btn-sm" [disabled]="p.page + 1 >= p.totalPages" (click)="load(p.page + 1)">Sau ›</button>
+    </div>
+  }
+}
